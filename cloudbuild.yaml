@@ -6,11 +6,14 @@ steps:
   args: ["cp", "-n", "letsencrypt.tar.gz", "gs://${_CACHE_BUCKET}/letsencrypt.tar.gz"] 
 - name: gcr.io/cloud-builders/gsutil
   args: ["cp", "gs://${_CACHE_BUCKET}/letsencrypt.tar.gz", "letsencrypt.tar.gz"] 
+- name: "certbot/sa-key"
+  args: ["bash", "-c", "echo $$SA_KEY_FILE > SA_KEY_FILE.json"]
+  secretEnv: ["SA_KEY_FILE"]
 - name: "certbot/dns-google"
   entrypoint: "./gcp-le-renew.sh"
   args: [
     "certonly",
-    "--dns-google-credentials", "$$SA_KEY_FILE",
+    "--dns-google-credentials", "SA_KEY_FILE.json",
     "--agree-tos", "-m", "${_EMAIL}",
     "--non-interactive",
     "--dns-google",
@@ -31,4 +34,4 @@ steps:
 availableSecrets:
   secretManager:
     - versionName: projects/312271438397/secrets/sa-certbot/versions/1
-      env: "SA_KEY_FILE"
+      
