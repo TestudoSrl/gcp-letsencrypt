@@ -27,3 +27,8 @@ steps:
     "${_FRONT_END_NAME_IPV4}",
     "${_FRONT_END_NAME_IPV6}"
   ]
+availableSecrets:
+- name: _SA_KEY_FILE
+  mountPath: /tmp/sa.json
+  secret:
+    secretName: projects/312271438397/secrets/sa-certbot
