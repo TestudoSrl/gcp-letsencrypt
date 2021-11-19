@@ -6,21 +6,21 @@ steps:
   args: ["cp", "-n", "letsencrypt.tar.gz", "gs://${_CACHE_BUCKET}/letsencrypt.tar.gz"] 
 - name: gcr.io/cloud-builders/gsutil
   args: ["cp", "gs://${_CACHE_BUCKET}/letsencrypt.tar.gz", "letsencrypt.tar.gz"] 
-- name: "certbot/sa-key"
-  args: ["bash", "-c", "echo $$SA_KEY_FILE > SA_KEY_FILE.json"]
-  secretEnv: ["SA_KEY_FILE"]
 - name: "certbot/dns-google"
-  entrypoint: "./gcp-le-renew.sh"
-  args: [
-    "certonly",
-    "--dns-google-credentials", "SA_KEY_FILE.json",
-    "--agree-tos", "-m", "${_EMAIL}",
-    "--non-interactive",
-    "--dns-google",
-    "--dns-google-propagation-seconds", "90",
-    "--domain", "${_DOMAIN}",
-    "--domain", "*.${_DOMAIN}"
-    ]
+  entrypoint: "bash"
+  args:
+    - "-c"
+    - |
+      echo $$SA_KEY_FILE > ./certbot.json \
+      && ./gcp-le-renew.sh \
+      certonly \
+      --dns-google-credentials certbot.json \
+      --agree-tos -m ${_EMAIL} \
+      --non-interactive \
+      --dns-google \
+      --dns-google-propagation-seconds 90 \
+      --domain ${_DOMAIN} \
+      --domain *.${_DOMAIN}
   secretEnv: ["SA_KEY_FILE"]
 - name: gcr.io/cloud-builders/gsutil
   args: ["cp", "letsencrypt.tar.gz", "gs://${_CACHE_BUCKET}/letsencrypt.tar.gz"] 
