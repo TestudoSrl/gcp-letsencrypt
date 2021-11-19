@@ -5,7 +5,7 @@ tar -zxf letsencrypt.tar.gz --directory /etc/letsencrypt/
 
 echo $$SA_KEY_FILE > certbot.json
 
-echo certbot.json
+cat certbot.json
 
 ls -l
 
