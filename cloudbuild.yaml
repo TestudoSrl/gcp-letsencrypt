@@ -34,4 +34,5 @@ steps:
 availableSecrets:
   secretManager:
     - versionName: projects/312271438397/secrets/sa-certbot/versions/1
+      env: SA_KEY_FILE
       
