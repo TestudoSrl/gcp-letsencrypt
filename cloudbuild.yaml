@@ -18,6 +18,7 @@ steps:
     "--domain", "${_DOMAIN}",
     "--domain", "*.${_DOMAIN}"
     ]
+  env: ["FORCE_RENEWAL=${_FORCE_RENEWAL}"]
   secretEnv: ["SA_KEY_FILE"]
 - name: gcr.io/cloud-builders/gsutil
   args: ["cp", "letsencrypt.tar.gz", "gs://${_CACHE_BUCKET}/letsencrypt.tar.gz"] 
@@ -28,6 +29,11 @@ steps:
     "${_FRONT_END_NAME_IPV4}",
     "${_FRONT_END_NAME_IPV6}"
   ]
+substitutions:
+  # Empty by default: scheduled runs renew only inside the 30-day window.
+  # Pass a non-empty value (e.g. _FORCE_RENEWAL=true) on a manual trigger run
+  # to force certbot to reissue the certificate immediately.
+  _FORCE_RENEWAL: ''
 availableSecrets:
   secretManager:
     - versionName: projects/$PROJECT_ID/secrets/sa-certbot/versions/1
